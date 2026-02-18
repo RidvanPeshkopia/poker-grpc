@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package poker;
+
+service PokerService {
+  // Evaluates a single hand (best combination of 5 cards from hand + community)
+  rpc EvaluateHand (HandRequest) returns (HandResponse) {}
+
+  // Compares two hands and determines the winner
+  rpc CompareHands (CompareRequest) returns (CompareResponse) {}
+
+  // Calculates winning probability using Monte Carlo simulation
+  rpc CalculateProbability (ProbabilityRequest) returns (ProbabilityResponse) {}
+}
+
+message Card {
+  string suit = 1; // "H", "D", "C", "S"
+  string rank = 2; // "2"-"9", "T", "J", "Q", "K", "A"
+}
+
+// Represents a set of cards (e.g., hole cards or community cards)
+// Input can be raw strings like "Ah", "Kd" or structured Card objects
+message CardSet {
+  repeated string cards = 1; 
+}
+
+message HandRequest {
+  repeated string hole_cards = 1;      // e.g., ["Ah", "Kd"]
+  repeated string community_cards = 2; // e.g., ["7s", "8s", "9s"]
+}
+
+message HandResponse {
+  int32 rank_value = 1;       // Numeric value for comparison (higher is better)
+  string rank_name = 2;       // e.g., "Full House", "Flush"
+  repeated string best_hand = 3; // The 5 cards that make the best hand
+}
+
+message CompareRequest {
+  HandRequest hand1 = 1;
+  HandRequest hand2 = 2;
+}
+
+message CompareResponse {
+  int32 winner = 1; // 1 for hand1, 2 for hand2, 0 for tie
+  string winning_hand_name = 2; // e.g., "Flush"
+}
+
+message ProbabilityRequest {
+  repeated string hole_cards = 1;      // My cards
+  repeated string community_cards = 2; // Known community cards (0-5)
+  int32 num_players = 3;               // Total players in the game
+  int32 num_simulations = 4;           // Number of Monte Carlo iterations (e.g., 10000)
+}
+
+message ProbabilityResponse {
+  double win_probability = 1;  // 0.0 to 1.0
+  double tie_probability = 2;  // 0.0 to 1.0
+  double lose_probability = 3; // 0.0 to 1.0
+}
