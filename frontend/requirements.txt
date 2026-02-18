@@ -1,4 +1,5 @@
 Flask==2.0.1
+Werkzeug==2.2.2
 grpcio==1.70.0
 grpcio-tools==1.70.0
 protobuf>=4.21.0
