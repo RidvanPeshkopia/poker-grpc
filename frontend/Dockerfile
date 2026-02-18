@@ -1,10 +1,16 @@
 FROM python:3.9-slim
 WORKDIR /app
-COPY requirements.txt .
+
+# Copy files relative to the REPOSITORY ROOT
+COPY frontend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-# Copy proto file and generate code INSIDE the container
-COPY poker.proto .
+
+# Use the original proto file from protos/ folder
+COPY protos/poker.proto .
 RUN python -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. poker.proto
-COPY . .
+
+# Copy the rest of the frontend code
+COPY frontend/ .
+
 EXPOSE 8080
 CMD ["python", "app.py"]
