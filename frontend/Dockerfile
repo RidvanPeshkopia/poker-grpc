@@ -1,16 +1,19 @@
 FROM python:3.9-slim
 WORKDIR /app
 
-# Robust install without upgrading pip (to avoid potential breakage)
+# Install dependencies first
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Use the LOCAL proto file
-COPY poker.proto .
-RUN python -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. poker.proto
-
-# Copy the rest of the frontend code
+# Copy ALL source code (including app.py and potentially stale pb2 files)
 COPY . .
+
+# Copy proto file just to be sure it's fresh
+COPY poker.proto .
+
+# FORCE RE-GENERATION of gRPC files *AFTER* copying source code
+# This ensures that any stale local files are overwritten by fresh ones
+RUN python -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. poker.proto
 
 # Set explicit python buffering
 ENV PYTHONUNBUFFERED=1
