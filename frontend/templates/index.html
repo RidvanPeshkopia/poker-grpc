@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texas Hold'em Evaluator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #34495e;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e74c3c;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #bdc3c7;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #2c3e50;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 2rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-eval {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-prob {
+            background-color: #e67e22;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .result-box {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #2c3e50;
+            border-radius: 5px;
+            border-left: 5px solid;
+        }
+
+        .success {
+            border-color: #2ecc71;
+        }
+
+        .error {
+            border-color: #e74c3c;
+        }
+
+        .card-display {
+            font-family: monospace;
+            font-size: 1.2em;
+            color: #f1c40f;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>♠️ Hold'em Evaluator</h1>
+
+        <form method="POST">
+            <div class="form-group">
+                <label>Hole Cards (e.g., Ah, Kd)</label>
+                <input type="text" name="hole_cards" placeholder="Ah, Kd" required>
+            </div>
+
+            <div class="form-group">
+                <label>Community Cards (Optional)</label>
+                <input type="text" name="community_cards" placeholder="7s, 8d, 9c">
+            </div>
+
+            <div class="form-group">
+                <label>Num Players (Prob. Only)</label>
+                <input type="number" name="num_players" value="2" min="2" max="10">
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" name="action" value="evaluate" class="btn-eval">Evaluate Hand</button>
+                <button type="submit" name="action" value="probability" class="btn-prob">Win Probability</button>
+            </div>
+        </form>
+
+        {% if error %}
+        <div class="result-box error">
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+
+        {% if result %}
+        <div class="result-box success">
+            <h3>Hand Evaluation</h3>
+            <p><strong>Rank:</strong> {{ result.rank_name }}</p>
+            <p><strong>Best Hand:</strong> <span class="card-display">{{ result.best_hand }}</span></p>
+        </div>
+        {% endif %}
+
+        {% if prob_result %}
+        <div class="result-box success">
+            <h3>Win Probability</h3>
+            <p><strong>Win:</strong> {{ prob_result.win }}</p>
+            <p><strong>Tie:</strong> {{ prob_result.tie }}</p>
+            <p><strong>Lose:</strong> {{ prob_result.lose }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
