@@ -23,13 +23,22 @@ def parse_card(card_str):
     if len(card_str) != 2:
         raise ValueError(f"Invalid card string: {card_str}")
     
-    suit = card_str[0].upper()
-    rank = card_str[1].upper()
+    first = card_str[0].upper()
+    second = card_str[1].upper()
     
-    if suit not in 'HSCD':
-        raise ValueError(f"Invalid suit in {card_str}")
+    ranks = '..23456789TJQKA'
+    suits = 'HSCD'
+    
+    # Try parsing as SuitRank (HA) - Original format
+    if first in suits and second in ranks:
+        return (get_rank_value(second), first)
         
-    return (get_rank_value(rank), suit)
+    # Try parsing as RankSuit (AH) - Frontend/User format
+    elif first in ranks and second in suits:
+        return (get_rank_value(first), second)
+        
+    else:
+        raise ValueError(f"Invalid card format: {card_str} (Expected SuitRank e.g. 'HA' or RankSuit e.g. 'AH')")
 
 def hand_rank(hand):
     """Return a value indicating the ranking of a hand."""
